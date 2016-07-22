@@ -5,7 +5,7 @@ scope = 'user-library-read'
 
 
 def work(playlist_url='https://open.spotify.com/user/ab0o/playlist/0Au1T5jRUGDV0TO0M0EJMn',
-                         username=""):
+         username=""):
     token = util.prompt_for_user_token(username,
                                        client_id='5a02a6cdbb4d4c739ba8dd8633627baf',
                                        client_secret='2017480ec40c41b3a83b70761091808a',
@@ -38,4 +38,3 @@ def work(playlist_url='https://open.spotify.com/user/ab0o/playlist/0Au1T5jRUGDV0
 
     else:
         print("Can't get token for", username)
-
