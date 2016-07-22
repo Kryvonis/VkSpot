@@ -5,9 +5,9 @@ from vk_worker import work as vkwork
 USERNAME = 'Artem Kryvonis'
 
 # copy playlist url form spotify and paste here
-PLAYLIST_URL = 'https://open.spotify.com/user/spotifydiscover/playlist/6TQuzFJVbuiL5W5iHjU4sX'
+PLAYLIST_URL = 'https://open.spotify.com/user/spotify/playlist/7tIim3qlaUUT1vXe43VlAA'
 # folder where you find your music
-FOLDER = '/Volumes/myfoldartem/weekly'
+FOLDER = '/Volumes/myfoldartem/NuMetal'
 
 spotwork(playlist_url=PLAYLIST_URL, username=USERNAME)
 vkwork(music_folder=FOLDER)

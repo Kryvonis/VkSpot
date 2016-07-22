@@ -11,30 +11,30 @@ def work(playlist_url='https://open.spotify.com/user/ab0o/playlist/0Au1T5jRUGDV0
                                        client_secret='2017480ec40c41b3a83b70761091808a',
                                        redirect_uri='http://oauth.vk.com/blank.html',
                                        scope=scope)
-    result_tuple = {}
     if token:
         sp = spotipy.Spotify(auth=token)
         user = playlist_url.split('/user/')[1].split('/playlist')[0]
         playlist_id = playlist_url.split('/playlist/')[1]
         sp.trace = False
+
         songs_limit = 50
         songs_offset = 0
         user_songs = sp.user_playlist_tracks(playlist_id=playlist_id, limit=songs_limit,
                                              offset=songs_offset, user=user)
         songs_num = user_songs['total']
-        while songs_offset < songs_num:
-            user_songs = sp.user_playlist_tracks(playlist_id=playlist_id, limit=songs_limit,
-                                                 offset=songs_offset, user=user)
-            for song in user_songs['items']:
-                result_tuple[song['track']['name']] = [song['track']['duration_ms']]
-                for artist in song['track']['artists']:
-                    result_tuple[song['track']['name']].append(artist['name'])
-            songs_offset += songs_limit
-
-        print(result_tuple)
         with open('access_tok.txt', 'w') as f:
-            for key, value in result_tuple.items():
-                f.write("{0} {1}|:time|{2}\n".format(key, value[1], value[0]))
+            while songs_offset < songs_num:
+                user_songs = sp.user_playlist_tracks(playlist_id=playlist_id, limit=songs_limit,
+                                                     offset=songs_offset, user=user)
+                list_song = user_songs['items']
+                for song in user_songs['items']:
+                    song_name = song['track']['name']
+                    song_duration = song['track']['duration_ms']
+                    song_artist = []
+                    for artist in song['track']['artists']:
+                        song_artist.append(artist['name'])
+                    f.write("{0} {1}|:time|{2}\n".format(song_name, song_artist[0], song_duration))
+                songs_offset += songs_limit
 
     else:
         print("Can't get token for", username)
