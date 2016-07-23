@@ -22,7 +22,7 @@ def work(playlist_url='https://open.spotify.com/user/ab0o/playlist/0Au1T5jRUGDV0
         user_songs = sp.user_playlist_tracks(playlist_id=playlist_id, limit=songs_limit,
                                              offset=songs_offset, user=user)
         songs_num = user_songs['total']
-        with open('access_tok.txt', 'w') as f:
+        with open('input.txt','w') as f:
             while songs_offset < songs_num:
                 user_songs = sp.user_playlist_tracks(playlist_id=playlist_id, limit=songs_limit,
                                                      offset=songs_offset, user=user)

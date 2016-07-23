@@ -1,11 +1,11 @@
+import os
 import pickle
 import re
 import webbrowser
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
-
-import os
+from vk import exceptions
 import vk
 
 # id of vk.com application, that has access to audio
@@ -56,32 +56,48 @@ def get_saved_auth_params():
     return access_token, user_id
 
 
-def download_track(t_url, t_name,music_folder=''):
+def download_track(t_url, t_name, music_folder=''):
     if not os.path.exists(music_folder):
-        os.chmod(music_folder,777)
         os.makedirs(music_folder)
+        os.chmod(music_folder, 777)
     t_path = os.path.join(music_folder or "", t_name)
     if not os.path.exists(t_path):
         print("Downloading {0}".format(t_name.encode('ascii', 'replace')))
-        urlretrieve(t_url, t_path)
+        try:
+            urlretrieve(t_url, t_path)
+        except Exception:
+            print("Cant download %s" % t_name)
 
 
-def get_track_from_spot(token,music_folder=''):
+def get_track_from_spot(token, music_folder=''):
     session = vk.Session(access_token=token)
-
+    num_iteration = 0
     vkapi = vk.API(session=session)
-    with open('access_tok.txt') as f:
+    with open('input.txt', 'r') as f , open('output.txt','r') as endf:
         for line in f:
             song_name, song_time = line.split("|:time|")
             song_time = divmod(divmod(int(song_time), 1000)[0], 60)
-            result = vkapi.audio.search(q=song_name)
-            if result[0]:
-                for song in result[1:]:
-                    if divmod(song['duration'], 60) == song_time:
-                        print('YES')
-                        # vkapi.audio.add(aid=song['aid'], owner_id=song['owner_id'])
-                        download_track(song['url'], song['title'] + ".mp3",music_folder=music_folder)
-                        break
+            print('Search %s' % song_name)
+            try:
+                result = vkapi.audio.search(q=song_name)
+                if result[0]:
+                    print('Try download %s' % song_name)
+                    for song in result[1:]:
+                        if divmod(song['duration'], 60) == song_time:
+                            # vkapi.audio.add(aid=song['aid'], owner_id=song['owner_id'])
+                            download_track(song['url'], song_name + ".mp3", music_folder=music_folder)
+                            endf.write(line)
+                            break
+            except Exception:
+                input("ok ?")
+                result = vkapi.audio.search(q=song_name)
+                if result[0]:
+                    print('Try download %s' % song_name)
+                    for song in result[1:]:
+                        if divmod(song['duration'], 60) == song_time:
+                            # vkapi.audio.add(aid=song['aid'], owner_id=song['owner_id'])
+                            download_track(song['url'], song_name + ".mp3", music_folder=music_folder)
+                            break
 
 
 def work(music_folder='music'):
@@ -89,4 +105,4 @@ def work(music_folder='music'):
     if not access_token or not user_id:
         access_token, user_id = get_auth_params()
     print(access_token, user_id)
-    get_track_from_spot(access_token,music_folder=music_folder)
+    get_track_from_spot(access_token, music_folder=music_folder)
