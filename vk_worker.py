@@ -2,6 +2,7 @@ import os
 import pickle
 import re
 import webbrowser
+from time import sleep
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
@@ -73,22 +74,24 @@ def get_track_from_spot(token, music_folder=''):
     session = vk.Session(access_token=token)
     num_iteration = 0
     vkapi = vk.API(session=session)
-    with open('input.txt', 'r') as f , open('output.txt','r') as endf:
+    with open('input.txt', 'r') as f, open('output.txt', 'w') as endf:
         for line in f:
             song_name, song_time = line.split("|:time|")
             song_time = divmod(divmod(int(song_time), 1000)[0], 60)
             print('Search %s' % song_name)
             try:
+                # sleep(1)
                 result = vkapi.audio.search(q=song_name)
                 if result[0]:
                     print('Try download %s' % song_name)
                     for song in result[1:]:
                         if divmod(song['duration'], 60) == song_time:
-                            # vkapi.audio.add(aid=song['aid'], owner_id=song['owner_id'])
+                            vkapi.audio.add(aid=song['aid'], owner_id=song['owner_id'])
                             download_track(song['url'], song_name + ".mp3", music_folder=music_folder)
                             endf.write(line)
                             break
-            except Exception:
+            except Exception as e:
+                print(e)
                 input("ok ?")
                 result = vkapi.audio.search(q=song_name)
                 if result[0]:

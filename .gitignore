@@ -1,5 +1,10 @@
 # Created by .ignore support plugin (hsz.mobi)
 .idea/
-access_tok.txt
-spotipy/__init__.py
+input.txt
+
 spotipy/
+.DS_Store
+.auth_data
+.cache-Artem Kryvonis
+__pycache__/
+spotipy/__pycache__/
