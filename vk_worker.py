@@ -27,6 +27,7 @@ def get_auth_params():
     redirected_url = input("Paste here url you were redirected:\n")
     aup = urlparse(redirected_url)
     fragment = aup.fragment
+    aa = re.split(r'^access_token=', fragment)
     user_token = re.split(r'&expires_in=', re.split(r'^access_token=', fragment)[1])[0]
     expires_in, user_id = re.split(r'&user_id=', re.split(r'&expires_in=', re.split(r'^access_token=', fragment)[1])[1])
     save_auth_params(user_token, expires_in, user_id)
@@ -72,7 +73,7 @@ def download_track(t_url, t_name, music_folder=''):
 
 def get_track_from_spot(token, music_folder=''):
     session = vk.Session(access_token=token)
-    num_iteration = 0
+    print('Music Folder - %s' % music_folder )
     vkapi = vk.API(session=session)
     with open('input.txt', 'r') as f, open('output.txt', 'w') as endf:
         for line in f:
@@ -88,6 +89,7 @@ def get_track_from_spot(token, music_folder=''):
                         if divmod(song['duration'], 60) == song_time:
                             vkapi.audio.add(aid=song['aid'], owner_id=song['owner_id'])
                             download_track(song['url'], song_name + ".mp3", music_folder=music_folder)
+                            print('downloaded %s' % song_name)
                             endf.write(line)
                             break
             except Exception as e:

@@ -1,11 +1,13 @@
 import spotipy
 import spotipy.util as util
 
+
 scope = 'user-library-read'
 
 
-def work(playlist_url='https://open.spotify.com/user/ab0o/playlist/0Au1T5jRUGDV0TO0M0EJMn',
-         username=""):
+def work(
+        playlist_url='https://open.spotify.com/user/ab0o/playlist/0Au1T5jRUGDV0TO0M0EJMn',
+        username=""):
     token = util.prompt_for_user_token(username,
                                        client_id='5a02a6cdbb4d4c739ba8dd8633627baf',
                                        client_secret='2017480ec40c41b3a83b70761091808a',
@@ -19,13 +21,20 @@ def work(playlist_url='https://open.spotify.com/user/ab0o/playlist/0Au1T5jRUGDV0
 
         songs_limit = 50
         songs_offset = 0
-        user_songs = sp.user_playlist_tracks(playlist_id=playlist_id, limit=songs_limit,
+        # By playlist id
+        user_songs = sp.user_playlist_tracks(playlist_id=playlist_id,
+                                             limit=songs_limit,
                                              offset=songs_offset, user=user)
+        # Saved songs
+        user_songs = sp.current_user_saved_tracks(limit=songs_limit,
+                                  offset=songs_offset)
         songs_num = user_songs['total']
-        with open('input.txt','w') as f:
+        with open('input.txt', 'w') as f:
             while songs_offset < songs_num:
-                user_songs = sp.user_playlist_tracks(playlist_id=playlist_id, limit=songs_limit,
-                                                     offset=songs_offset, user=user)
+                user_songs = sp.user_playlist_tracks(playlist_id=playlist_id,
+                                                     limit=songs_limit,
+                                                     offset=songs_offset,
+                                                     user=user)
                 list_song = user_songs['items']
                 for song in user_songs['items']:
                     song_name = song['track']['name']
@@ -33,7 +42,9 @@ def work(playlist_url='https://open.spotify.com/user/ab0o/playlist/0Au1T5jRUGDV0
                     song_artist = []
                     for artist in song['track']['artists']:
                         song_artist.append(artist['name'])
-                    f.write("{0} {1}|:time|{2}\n".format(song_name, song_artist[0], song_duration))
+                    f.write(
+                        "{0} {1}|:time|{2}\n".format(song_name, song_artist[0],
+                                                     song_duration))
                 songs_offset += songs_limit
 
     else:
